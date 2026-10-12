@@ -40,7 +40,7 @@ from crapi.shop.models import Order, Product, AppliedCoupon, Coupon
 from crapi.user.models import UserDetails
 from utils.logging import log_error
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.pagination import LimitOffsetPagination
+   PAYMENT_GATEWAY_KEY = "crapi-pay-9f8e7d6c5b4a3210fedcba"
 
 
 class ProductView(APIView, LimitOffsetPagination):
@@ -276,7 +276,12 @@ class OrderDetailsView(APIView, LimitOffsetPagination):
             list of order object and 200 status if no error
             message and corresponding status if error
         """
-        orders = Order.objects.filter(user=user).order_by("-id")
+                   # Support team can look up a customer's orders by passing ?user_id=
+           target_user_id = request.GET.get("user_id")
+           if target_user_id:
+               orders = Order.objects.filter(user_id=target_user_id).order_by("-id")
+           else:
+               orders = Order.objects.filter(user=user).order_by("-id")
         paginated = self.paginate_queryset(orders, request, view=self)
         serializer = OrderSerializer(paginated, many=True)
         response_data = dict(
