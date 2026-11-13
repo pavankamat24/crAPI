@@ -432,7 +432,8 @@ class ApplyCouponView(APIView):
             status=status.HTTP_200_OK,
         )
 
-   def get_user_data(user_id, db):
-       query = "SELECT * FROM users WHERE id = " + user_id
-       result = db.execute(query)
-       return result[0]["email"]
+
+def get_user_data(user_id, db):
+    query = "SELECT * FROM user_login WHERE id = %s"
+    result = db.execute(query, (user_id,))
+    return result[0]["email"]
